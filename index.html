@@ -1,0 +1,3060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SOCEX</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:#f5f6f7;
+color:#1a1a1a;
+}
+
+header{
+background:#0b1f3a;
+border-bottom:3px solid #ff7a00;
+position:sticky;
+top:0;
+z-index:30;
+}
+
+.bar{
+max-width:1200px;
+margin:auto;
+padding:14px 20px;
+display:flex;
+align-items:center;
+gap:16px;
+}
+
+.logo{
+display:flex;
+align-items:center;
+cursor:pointer;
+}
+
+.logo img{
+height:34px;
+width:auto;
+display:block;
+}
+
+.search{
+display:flex;
+flex:1;
+gap:8px;
+}
+
+.search input{
+width:100%;
+padding:12px;
+border:1px solid #d7dfdb;
+border-radius:6px;
+outline:none;
+}
+
+button{
+border:0;
+border-radius:6px;
+padding:11px 16px;
+font-weight:700;
+cursor:pointer;
+}
+
+.primary{
+background:#ff7a00;
+color:white;
+}
+
+.primary:hover{
+background:#e56d00;
+}
+
+.ghost{
+background:#16345c;
+color:white;
+}
+
+.light{
+background:white;
+border:1px solid #dce4e0;
+}
+
+.light.active{
+background:#0b1f3a;
+color:white;
+border-color:#0b1f3a;
+}
+
+main{
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+
+.hero{
+background:linear-gradient(135deg,#0b1f3a,#16345c);
+color:white;
+border-radius:14px;
+padding:48px 30px;
+margin-bottom:24px;
+}
+
+.hero h1{
+font-size:36px;
+margin:0 0 12px;
+}
+
+.hero p{
+max-width:680px;
+line-height:1.6;
+color:#dbe4f0;
+}
+
+.hero .primary{
+margin-top:10px;
+}
+
+nav{
+display:flex;
+gap:8px;
+overflow-x:auto;
+margin-bottom:25px;
+padding-bottom:4px;
+}
+
+.section{
+margin-bottom:30px;
+}
+
+.row{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:18px;
+}
+
+.card{
+background:white;
+border-radius:10px;
+padding:16px;
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+border:1px solid #ececec;
+}
+
+.pic{
+height:160px;
+background:#f0f2f4;
+border-radius:8px;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+font-weight:700;
+color:#8a8a8a;
+margin-bottom:12px;
+padding:8px;
+}
+
+.badge{
+display:inline-block;
+background:#e6f4ea;
+color:#1a7d34;
+border-radius:20px;
+padding:5px 9px;
+font-size:12px;
+font-weight:700;
+}
+
+.muted{
+color:#68756f;
+}
+
+.price{
+font-size:20px;
+font-weight:800;
+margin:10px 0;
+color:#0b1f3a;
+}
+
+.cartBtn{
+position:fixed;
+right:20px;
+bottom:20px;
+background:#ff7a00;
+color:white;
+z-index:20;
+box-shadow:0 4px 14px rgba(0,0,0,.25);
+}
+
+footer{
+text-align:center;
+padding:30px;
+color:#718078;
+}
+
+.page{
+background:#f5f6f7;
+min-height:100vh;
+position:fixed;
+inset:0;
+overflow-y:auto;
+z-index:50;
+}
+
+.page.hidden{
+display:none;
+}
+
+.pagebar{
+background:#0b1f3a;
+padding:14px 20px;
+display:flex;
+align-items:center;
+gap:14px;
+position:sticky;
+top:0;
+}
+
+.pagebar h2{
+color:white;
+margin:0;
+font-size:19px;
+}
+
+.pagebar .back{
+background:transparent;
+color:white;
+border:0;
+padding:6px 10px;
+font-size:26px;
+font-weight:400;
+line-height:1;
+border-radius:8px;
+}
+
+.pagebar .back:active{
+background:rgba(255,255,255,.12);
+}
+
+.pagebox{
+max-width:640px;
+margin:auto;
+padding:25px 20px;
+}
+
+.input{
+width:100%;
+padding:12px;
+margin:7px 0 15px;
+border:1px solid #d7dedb;
+border-radius:6px;
+}
+
+.error-banner{
+background:#fdeceb;
+color:#a4291d;
+border:1px solid #f3c6c1;
+padding:10px 14px;
+border-radius:8px;
+margin-bottom:16px;
+}
+
+/* Cart & checkout - Jumia style */
+
+.empty-cart{
+text-align:center;
+padding:50px 20px;
+}
+
+.cart-list{
+display:flex;
+flex-direction:column;
+gap:12px;
+margin-bottom:20px;
+}
+
+.cart-item{
+display:flex;
+gap:12px;
+background:white;
+border:1px solid #ececec;
+border-radius:10px;
+padding:12px;
+}
+
+.cart-thumb{
+width:64px;
+height:64px;
+flex-shrink:0;
+background:#f0f2f4;
+border-radius:8px;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+font-size:10px;
+font-weight:700;
+color:#8a8a8a;
+padding:4px;
+}
+
+.cart-item-info{
+flex:1;
+}
+
+.cart-item-name{
+font-weight:700;
+margin-bottom:4px;
+}
+
+.cart-item-price{
+color:#0b1f3a;
+font-weight:800;
+margin-bottom:8px;
+}
+
+.qty-control{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.qty-btn{
+width:28px;
+height:28px;
+padding:0;
+border-radius:50%;
+background:#f0f2f4;
+color:#0b1f3a;
+font-size:16px;
+font-weight:800;
+line-height:1;
+}
+
+.qty-value{
+font-weight:700;
+min-width:16px;
+text-align:center;
+}
+
+.remove-btn{
+margin-left:auto;
+background:transparent;
+color:#a4291d;
+font-size:12px;
+font-weight:700;
+padding:4px 6px;
+}
+
+.summary-box{
+background:white;
+border:1px solid #ececec;
+border-radius:10px;
+padding:16px;
+margin-bottom:16px;
+}
+
+.summary-row{
+display:flex;
+justify-content:space-between;
+padding:6px 0;
+color:#4a5560;
+}
+
+.summary-total{
+border-top:1px solid #ececec;
+margin-top:6px;
+padding-top:12px;
+font-weight:800;
+font-size:18px;
+color:#0b1f3a;
+}
+
+.full-btn{
+width:100%;
+padding:14px;
+font-size:16px;
+}
+
+.check-section{
+margin-bottom:22px;
+}
+
+.check-label{
+font-size:12px;
+font-weight:800;
+color:#8a8a8a;
+letter-spacing:1px;
+margin-bottom:10px;
+}
+
+.address-card{
+display:flex;
+gap:10px;
+background:white;
+border:1px solid #ececec;
+border-radius:10px;
+padding:14px;
+}
+
+.address-icon{
+font-size:22px;
+}
+
+.address-fields{
+flex:1;
+}
+
+.address-fields .input{
+margin:0 0 8px;
+}
+
+.address-fields .input:last-child{
+margin-bottom:0;
+}
+
+.pay-option{
+display:flex;
+align-items:center;
+gap:12px;
+background:white;
+border:2px solid #ececec;
+border-radius:10px;
+padding:14px;
+margin-bottom:10px;
+cursor:pointer;
+}
+
+.pay-option.selected{
+border-color:#ff7a00;
+background:#fff6ee;
+}
+
+.pay-icon{
+font-size:22px;
+}
+
+.pay-title{
+font-weight:700;
+}
+
+.pay-sub{
+font-size:12px;
+}
+
+.card-fields{
+background:#f7f8f9;
+border-radius:10px;
+padding:12px;
+margin:-2px 0 10px;
+}
+
+.card-row{
+display:flex;
+gap:10px;
+}
+
+.card-row .input{
+margin:7px 0 0;
+}
+
+/* Splash & role selection */
+
+.fullscreen-overlay{
+position:fixed;
+inset:0;
+background:linear-gradient(135deg,#0b1f3a,#16345c);
+z-index:200;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:30px;
+}
+
+.fullscreen-overlay.hidden{
+display:none;
+}
+
+.splash-inner{
+max-width:400px;
+width:100%;
+text-align:center;
+color:white;
+}
+
+.splash-logo{
+font-size:60px;
+color:#ff7a00;
+margin-bottom:10px;
+}
+
+.splash-inner h1{
+font-size:28px;
+margin:0 0 10px;
+}
+
+.splash-inner p{
+color:#c8d4e3;
+margin-bottom:26px;
+line-height:1.5;
+}
+
+.role-card{
+display:flex;
+align-items:center;
+gap:14px;
+width:100%;
+background:rgba(255,255,255,0.08);
+border:1px solid rgba(255,255,255,0.2);
+border-radius:12px;
+padding:18px;
+margin-bottom:14px;
+text-align:left;
+color:white;
+}
+
+.role-icon{
+font-size:28px;
+}
+
+.role-text{
+display:flex;
+flex-direction:column;
+}
+
+.role-title{
+font-weight:800;
+font-size:16px;
+}
+
+.role-sub{
+font-size:12px;
+color:#c8d4e3;
+margin-top:2px;
+}
+
+.variant-block{
+margin:20px 0;
+}
+
+.color-options{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+}
+
+.color-swatch{
+background:white;
+border:2px solid #ececec;
+padding:9px 14px;
+border-radius:8px;
+font-weight:600;
+color:#1a1a1a;
+}
+
+.color-swatch.selected{
+border-color:#ff7a00;
+background:#fff6ee;
+color:#ff7a00;
+}
+
+.icon-btn{
+background:rgba(255,255,255,0.12);
+border-radius:50%;
+width:40px;
+height:40px;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:0;
+flex-shrink:0;
+}
+
+.notif-dot{
+position:absolute;
+top:6px;
+right:6px;
+width:9px;
+height:9px;
+border-radius:50%;
+background:#ff3b30;
+border:2px solid #0b1f3a;
+}
+
+.notif-dot.hidden{
+display:none;
+}
+
+.notif-item{
+background:white;
+border:1px solid #ececec;
+border-radius:10px;
+padding:14px;
+margin-bottom:10px;
+}
+
+.notif-item.unread{
+border-left:3px solid #ff7a00;
+}
+
+.notif-title{
+font-weight:700;
+margin-bottom:4px;
+}
+
+.rating-stars-display{
+color:#ffb200;
+}
+
+.image-gallery{
+display:flex;
+gap:8px;
+overflow-x:auto;
+margin-bottom:10px;
+}
+
+.gallery-thumb{
+width:56px;
+height:56px;
+flex-shrink:0;
+border-radius:8px;
+overflow:hidden;
+border:2px solid transparent;
+}
+
+.gallery-thumb.active{
+border-color:#ff7a00;
+}
+
+.gallery-thumb img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* Account page */
+
+.account-header{
+display:flex;
+align-items:center;
+gap:14px;
+padding:10px 0 24px;
+}
+
+.account-avatar{
+width:60px;
+height:60px;
+border-radius:50%;
+background:linear-gradient(135deg,#ff9d3d,#ff6a00);
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-size:24px;
+font-weight:800;
+flex-shrink:0;
+}
+
+.account-email{
+font-weight:700;
+font-size:15px;
+word-break:break-all;
+}
+
+.account-menu{
+display:flex;
+flex-direction:column;
+gap:2px;
+background:white;
+border-radius:12px;
+overflow:hidden;
+border:1px solid #ececec;
+margin-bottom:20px;
+}
+
+.account-menu-item{
+display:flex;
+align-items:center;
+gap:14px;
+padding:16px;
+border:0;
+border-bottom:1px solid #f2f2f2;
+background:white;
+width:100%;
+text-align:left;
+color:#1a1a1a;
+font-weight:600;
+border-radius:0;
+}
+
+.account-menu-item:last-child{
+border-bottom:0;
+}
+
+.account-menu-icon{
+font-size:20px;
+width:24px;
+text-align:center;
+}
+
+.account-menu-arrow{
+margin-left:auto;
+color:#c0c8d0;
+}
+
+.logout-row{
+color:#a4291d;
+background:white;
+border:1px solid #f3c6c1;
+border-radius:12px;
+width:100%;
+padding:14px;
+font-weight:700;
+}
+
+/* Seller onboarding intro */
+
+.onboarding-hero{
+text-align:center;
+padding:10px 0 26px;
+}
+
+.onboarding-icon{
+width:70px;
+height:70px;
+border-radius:20px;
+background:linear-gradient(135deg,#ff9d3d,#ff6a00);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:32px;
+margin:0 auto 16px;
+}
+
+.onboarding-hero h3{
+margin:0 0 8px;
+font-size:20px;
+}
+
+.step-tracker{
+display:flex;
+gap:6px;
+margin-bottom:24px;
+}
+
+.step-dot{
+flex:1;
+height:4px;
+border-radius:4px;
+background:#ececec;
+}
+
+.step-dot.done{
+background:#ff7a00;
+}
+
+.step-list{
+background:white;
+border:1px solid #ececec;
+border-radius:12px;
+padding:4px 16px;
+margin-bottom:24px;
+}
+
+.step-list-item{
+display:flex;
+align-items:center;
+gap:12px;
+padding:14px 0;
+border-bottom:1px solid #f2f2f2;
+font-size:14px;
+}
+
+.step-list-item:last-child{
+border-bottom:0;
+}
+
+.step-num{
+width:24px;
+height:24px;
+border-radius:50%;
+background:#f0f2f4;
+color:#68756f;
+font-size:12px;
+font-weight:800;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-shrink:0;
+}
+
+/* Filters */
+
+.filter-bar{
+display:flex;
+gap:8px;
+margin-bottom:20px;
+flex-wrap:wrap;
+}
+
+.filter-input{
+margin:0;
+flex:1;
+min-width:90px;
+}
+
+/* Wishlist heart */
+
+.wish-btn{
+position:absolute;
+top:10px;
+right:10px;
+background:rgba(255,255,255,0.9);
+border-radius:50%;
+width:32px;
+height:32px;
+padding:0;
+font-size:16px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.card{
+position:relative;
+}
+
+/* Order tracking timeline */
+
+.timeline{
+display:flex;
+flex-direction:column;
+gap:0;
+margin:14px 0;
+}
+
+.timeline-step{
+display:flex;
+gap:12px;
+position:relative;
+padding-bottom:20px;
+}
+
+.timeline-step:last-child{
+padding-bottom:0;
+}
+
+.timeline-dot{
+width:20px;
+height:20px;
+border-radius:50%;
+background:#ececec;
+flex-shrink:0;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:11px;
+color:white;
+z-index:1;
+}
+
+.timeline-step.active .timeline-dot{
+background:#ff7a00;
+}
+
+.timeline-line{
+position:absolute;
+left:9px;
+top:20px;
+bottom:0;
+width:2px;
+background:#ececec;
+}
+
+.timeline-step.active .timeline-line{
+background:#ff7a00;
+}
+
+.timeline-label{
+font-weight:600;
+font-size:14px;
+padding-top:1px;
+}
+
+.timeline-step.active .timeline-label{
+color:#0b1f3a;
+font-weight:800;
+}
+
+/* Wallet */
+
+.wallet-card{
+background:linear-gradient(135deg,#0b1f3a,#16345c);
+color:white;
+border-radius:14px;
+padding:20px;
+margin-bottom:20px;
+}
+
+.wallet-label{
+font-size:12px;
+color:#c8d4e3;
+letter-spacing:1px;
+margin-bottom:6px;
+}
+
+.wallet-amount{
+font-size:28px;
+font-weight:800;
+margin-bottom:14px;
+}
+
+/* Review stars */
+
+.star-picker{
+display:flex;
+gap:8px;
+font-size:30px;
+margin:10px 0 16px;
+}
+
+.star{
+cursor:pointer;
+color:#ececec;
+}
+
+.star.filled{
+color:#ffb200;
+}
+
+/* OTP boxes */
+
+.otp-boxes{
+display:flex;
+gap:8px;
+justify-content:center;
+margin:20px 0;
+}
+
+.otp-box{
+width:44px;
+height:54px;
+text-align:center;
+font-size:22px;
+font-weight:800;
+border:2px solid #ececec;
+border-radius:10px;
+}
+
+.otp-box:focus{
+border-color:#ff7a00;
+outline:none;
+}
+
+@media(max-width:650px){
+.bar{flex-wrap:wrap;}
+.search{order:3;flex-basis:100%;}
+.hero h1{font-size:28px;}
+}
+</style>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+
+<body>
+
+<!-- ===== Splash screen ===== -->
+<div id="splashScreen" class="fullscreen-overlay">
+  <div class="splash-inner">
+    <img src="data:image/png;base64,
+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
+AElFTkSuQmCC
+" alt="SOCEX" style="width:120px;height:auto;margin:0 auto 16px;display:block">
+    <h1>Welcome to SOCEX</h1>
+    <p>The trusted marketplace for FUNAAB Okeho students.</p>
+    <button class="primary full-btn" id="splashContinue">Get Started</button>
+  </div>
+</div>
+
+<!-- ===== Role selection screen ===== -->
+<div id="roleSelect" class="fullscreen-overlay hidden">
+  <div class="splash-inner">
+    <h1>How will you use SOCEX?</h1>
+    <p>Choose how you'd like to get started.</p>
+
+    <button class="role-card" id="chooseBuyer">
+      <span class="role-icon">🛍️</span>
+      <span class="role-text">
+        <span class="role-title">I'm a Buyer</span>
+        <span class="role-sub">Browse and buy from verified students</span>
+      </span>
+    </button>
+
+    <button class="role-card" id="chooseSeller">
+      <span class="role-icon">🏪</span>
+      <span class="role-text">
+        <span class="role-title">I'm a Seller</span>
+        <span class="role-sub">List products and reach buyers on campus</span>
+      </span>
+    </button>
+  </div>
+</div>
+
+<header>
+<div class="bar">
+<div class="logo" id="homeLink"><img src="data:image/png;base64,
+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
+AElFTkSuQmCC
+" alt="SOCEX"></div>
+<div class="search">
+<input id="searchInput" placeholder="Search products...">
+<button class="primary" id="searchBtn">Search</button>
+</div>
+<button class="icon-btn" id="notifBtn" aria-label="Notifications" style="position:relative">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+    <path d="M13.73 21a2 2 0 01-3.46 0"></path>
+  </svg>
+  <span id="notifDot" class="notif-dot hidden"></span>
+</button>
+<button class="icon-btn" id="accountBtn" aria-label="Account">
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="8" r="4"></circle>
+    <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
+  </svg>
+</button>
+</div>
+</header>
+
+<main id="homeView">
+
+<section class="hero">
+<h1>Global commerce, engineered for trust.</h1>
+<p>Discover products from verified sellers and connect them to delivery through one transparent marketplace.</p>
+<button class="primary" id="browseBtn">Browse products</button>
+</section>
+
+<div id="statusBanner"></div>
+
+<nav>
+<button class="light category active" data-category="All">All</button>
+<button class="light category" data-category="Electronics">Electronics</button>
+<button class="light category" data-category="Fashion">Fashion</button>
+<button class="light category" data-category="Computing">Computing</button>
+<button class="light category" data-category="Home">Home</button>
+</nav>
+
+<div class="filter-bar">
+<input class="input filter-input" id="minPrice" type="number" placeholder="Min ₦">
+<input class="input filter-input" id="maxPrice" type="number" placeholder="Max ₦">
+<select class="input filter-input" id="sortSelect">
+  <option value="default">Sort</option>
+  <option value="price_asc">Price: Low to High</option>
+  <option value="price_desc">Price: High to Low</option>
+  <option value="rating_desc">Top Rated</option>
+</select>
+<button class="ghost" id="applyFilters">Apply</button>
+</div>
+
+<section id="results" class="section"></section>
+
+<section class="section">
+<div class="row">
+<h2>Products</h2>
+<span class="muted">Exact results first</span>
+</div>
+<div id="products" class="grid">
+<p>Loading products...</p>
+</div>
+</section>
+
+</main>
+
+<button class="cartBtn" id="cartBtn">🛒 Cart (<span id="count">0</span>)</button>
+
+<footer>
+SOCEX MVP • Trusted commerce
+</footer>
+
+<!-- Full page views -->
+<div id="page" class="page hidden">
+<div class="pagebar">
+<button class="back" id="pageBack">‹</button>
+<h2 id="pageTitle"></h2>
+</div>
+<div id="pageContent" class="pagebox"></div>
+</div>
+
+<script>
+
+const SUPABASE_URL = "https://shfvmeznwygikedwxvfv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_W-RCrtDKzPnBPCz6oRvmWg_KabKf7uw";
+
+let supabaseClient;
+try {
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch (err) {
+  showBanner("Could not connect to the database. Check your internet connection.");
+  console.error(err);
+}
+
+let products = [];
+let category = "All";
+let cart = [];
+let pendingRole = null;
+let isAdmin = false;
+const ADMIN_EMAIL_HINT = null; // admin status is checked via the admins table, not email
+
+async function notifyUser(userId, title, message){
+  if (!userId) return;
+  await supabaseClient.from("notifications").insert({ user_id: userId, title, message });
+}
+
+async function notifyAdmins(title, message){
+  const { data: adminRows } = await supabaseClient.from("admins").select("user_id");
+  if (!adminRows) return;
+  for (const row of adminRows){
+    await notifyUser(row.user_id, title, message);
+  }
+}
+
+/* ===== Splash & role selection ===== */
+
+document.getElementById("splashContinue").addEventListener("click", function(){
+  document.getElementById("splashScreen").classList.add("hidden");
+  document.getElementById("roleSelect").classList.remove("hidden");
+});
+
+document.getElementById("chooseBuyer").addEventListener("click", function(){
+  pendingRole = "buyer";
+  document.getElementById("roleSelect").classList.add("hidden");
+  account();
+});
+
+document.getElementById("chooseSeller").addEventListener("click", function(){
+  pendingRole = "seller";
+  document.getElementById("roleSelect").classList.add("hidden");
+  account();
+});
+
+async function checkExistingSession(){
+  if (!supabaseClient) return;
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (user){
+    document.getElementById("splashScreen").classList.add("hidden");
+    document.getElementById("roleSelect").classList.add("hidden");
+
+    const { data: adminRow } = await supabaseClient
+      .from("admins")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    isAdmin = !!adminRow;
+
+    refreshNotifDot();
+  }
+}
+checkExistingSession();
+
+async function claimAdminIfEmpty(){
+  const { count } = await supabaseClient
+    .from("admins")
+    .select("*", { count: "exact", head: true });
+
+  if ((count || 0) > 0){
+    alert("Admin has already been claimed. This link no longer works.");
+    return;
+  }
+
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user){
+    alert("Please log in or sign up first, then reopen this link.");
+    account();
+    return;
+  }
+
+  const { error } = await supabaseClient.from("admins").insert({ user_id: user.id });
+  if (error){
+    alert("Could not claim admin: " + error.message);
+    return;
+  }
+
+  isAdmin = true;
+  alert("You are now the SOCEX admin.");
+  account();
+}
+
+if (window.location.hash === "#claim-socex-admin"){
+  claimAdminIfEmpty();
+}
+
+async function refreshNotifDot(){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+  const { count } = await supabaseClient
+    .from("notifications")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .eq("is_read", false);
+  document.getElementById("notifDot").classList.toggle("hidden", !count);
+}
+
+document.getElementById("notifBtn").addEventListener("click", async function(){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user){
+    account();
+    return;
+  }
+
+  openPage("Notifications", `<p class="muted">Loading...</p>`);
+
+  const { data: notifs } = await supabaseClient
+    .from("notifications")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  if (!notifs || !notifs.length){
+    document.getElementById("pageContent").innerHTML = `<p class="muted">No notifications yet.</p>`;
+    return;
+  }
+
+  document.getElementById("pageContent").innerHTML = notifs.map(n => `
+    <div class="notif-item ${n.is_read ? "" : "unread"}">
+      <div class="notif-title">${n.title}</div>
+      <div class="muted">${n.message || ""}</div>
+    </div>
+  `).join("");
+
+  const unreadIds = notifs.filter(n => !n.is_read).map(n => n.id);
+  if (unreadIds.length){
+    await supabaseClient.from("notifications").update({ is_read: true }).in("id", unreadIds);
+    refreshNotifDot();
+  }
+});
+
+function sellerOnboarding(){
+  sellerVerificationStart();
+}
+
+async function buyerPhoneCheck(){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+
+  const { data: existing } = await supabaseClient
+    .from("buyer_profiles")
+    .select("*")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (existing && existing.phone_number){
+    closePage();
+    return;
+  }
+
+  openPage("One Last Step", `
+    <p class="muted">Add your phone number — we'll use it to send a handover code for safe pickups.</p>
+    <input class="input" id="buyerPhone" type="tel" placeholder="e.g. 0803xxxxxxx">
+    <button class="primary full-btn" id="saveBuyerPhone">Continue</button>
+    <p id="buyerPhoneMessage" class="muted"></p>
+  `);
+
+  document.getElementById("saveBuyerPhone").addEventListener("click", async function(){
+    const phone = document.getElementById("buyerPhone").value.trim();
+    if (!phone){
+      document.getElementById("buyerPhoneMessage").textContent = "Please enter a phone number.";
+      return;
+    }
+
+    const { error } = await supabaseClient
+      .from("buyer_profiles")
+      .upsert({ user_id: user.id, phone_number: phone }, { onConflict: "user_id" });
+
+    if (error){
+      document.getElementById("buyerPhoneMessage").textContent = error.message;
+      return;
+    }
+
+    closePage();
+  });
+}
+
+function showBanner(message){
+  document.getElementById("statusBanner").innerHTML =
+    `<div class="error-banner">${message}</div>`;
+}
+
+function clearBanner(){
+  document.getElementById("statusBanner").innerHTML = "";
+}
+
+function money(value){
+  return "₦" + Number(value || 0).toLocaleString();
+}
+
+/* ===== Page navigation (replaces modals) ===== */
+
+function openPage(title, html){
+  document.getElementById("pageTitle").textContent = title;
+  document.getElementById("pageContent").innerHTML = html;
+  document.getElementById("page").classList.remove("hidden");
+  document.getElementById("homeView").style.display = "none";
+  window.scrollTo(0,0);
+}
+
+function closePage(){
+  document.getElementById("page").classList.add("hidden");
+  document.getElementById("homeView").style.display = "";
+  document.getElementById("pageContent").innerHTML = "";
+}
+
+document.getElementById("pageBack").addEventListener("click", closePage);
+document.getElementById("homeLink").addEventListener("click", closePage);
+
+/* ===== Load products ===== */
+
+let sellerRatingMap = {};
+
+async function loadSellerRatings(){
+  const { data } = await supabaseClient.from("reviews").select("seller_id, rating");
+  const groups = {};
+  (data || []).forEach(r => {
+    if (!groups[r.seller_id]) groups[r.seller_id] = [];
+    groups[r.seller_id].push(r.rating);
+  });
+  sellerRatingMap = {};
+  Object.keys(groups).forEach(sellerId => {
+    const arr = groups[sellerId];
+    sellerRatingMap[sellerId] = (arr.reduce((a,b) => a+b, 0) / arr.length).toFixed(1);
+  });
+}
+
+function sellerRatingFor(product){
+  return sellerRatingMap[product.seller_id] || product.rating || 0;
+}
+
+async function loadProducts(){
+  if (!supabaseClient) return;
+  const { data, error } = await supabaseClient
+    .from("products")
+    .select("*")
+    .order("id", { ascending: true });
+
+  if (error){
+    console.error(error);
+    document.getElementById("products").innerHTML = "<p>Unable to load products.</p>";
+    showBanner("Could not load products: " + error.message);
+    return;
+  }
+
+  clearBanner();
+  products = data || [];
+  await loadSellerRatings();
+  renderProducts();
+}
+
+let wishlistIds = new Set();
+
+function renderProducts(){
+  let list = products.filter(p => category === "All" || p.category === category);
+
+  const minP = Number(document.getElementById("minPrice").value) || 0;
+  const maxP = Number(document.getElementById("maxPrice").value) || Infinity;
+  list = list.filter(p => Number(p.price) >= minP && Number(p.price) <= maxP);
+
+  const sortVal = document.getElementById("sortSelect").value;
+  if (sortVal === "price_asc") list = [...list].sort((a,b) => a.price - b.price);
+  if (sortVal === "price_desc") list = [...list].sort((a,b) => b.price - a.price);
+  if (sortVal === "rating_desc") list = [...list].sort((a,b) => (b.rating||0) - (a.rating||0));
+
+  if (!list.length){
+    document.getElementById("products").innerHTML = "<p>No products found.</p>";
+    return;
+  }
+
+  document.getElementById("products").innerHTML = list.map(product => `
+    <div class="card">
+      <button class="wish-btn wishToggle" data-id="${product.id}">${wishlistIds.has(product.id) ? "❤️" : "🤍"}</button>
+      <div class="pic">${product.image_url ? `<img src="${product.image_url}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">` : product.name}</div>
+      <span class="badge">✓ Verified seller</span>
+      <h3>${product.name}</h3>
+      <div class="muted">⭐ ${sellerRatingFor(product)}</div>
+      <div class="price">${money(product.price)}</div>
+      <button class="primary viewProduct" data-id="${product.id}">View product</button>
+    </div>
+  `).join("");
+
+  document.querySelectorAll(".viewProduct").forEach(button => {
+    button.addEventListener("click", function(){
+      viewProduct(Number(this.dataset.id));
+    });
+  });
+
+  document.querySelectorAll(".wishToggle").forEach(button => {
+    button.addEventListener("click", function(e){
+      e.stopPropagation();
+      toggleWishlist(Number(this.dataset.id));
+    });
+  });
+}
+
+document.getElementById("applyFilters").addEventListener("click", renderProducts);
+
+async function toggleWishlist(productId){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user){
+    account();
+    return;
+  }
+
+  if (wishlistIds.has(productId)){
+    await supabaseClient.from("wishlists").delete().eq("user_id", user.id).eq("product_id", productId);
+    wishlistIds.delete(productId);
+  } else {
+    await supabaseClient.from("wishlists").insert({ user_id: user.id, product_id: productId });
+    wishlistIds.add(productId);
+  }
+  renderProducts();
+}
+
+async function loadWishlist(){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+  const { data } = await supabaseClient.from("wishlists").select("product_id").eq("user_id", user.id);
+  wishlistIds = new Set((data || []).map(w => w.product_id));
+}
+
+document.querySelectorAll(".category").forEach(button => {
+  button.addEventListener("click", function(){
+    document.querySelectorAll(".category").forEach(b => b.classList.remove("active"));
+    this.classList.add("active");
+    category = this.dataset.category;
+    renderProducts();
+  });
+});
+
+function searchProducts(){
+  const query = document.getElementById("searchInput").value.trim().toLowerCase();
+
+  if (!query){
+    document.getElementById("results").innerHTML = "";
+    renderProducts();
+    return;
+  }
+
+  const matches = products.filter(p => String(p.name || "").toLowerCase().includes(query));
+
+  document.getElementById("results").innerHTML = `
+    <div class="row">
+      <h2>Exact results</h2>
+      <span class="muted">${matches.length} result(s)</span>
+    </div>
+    <div class="grid">
+      ${matches.length ? matches.map(product => `
+        <div class="card">
+          <span class="badge">Exact match</span>
+          <h3>${product.name}</h3>
+          <div class="price">${money(product.price)}</div>
+          <button class="primary searchView" data-id="${product.id}">View</button>
+        </div>
+      `).join("") : "<p>No exact match found.</p>"}
+    </div>
+  `;
+
+  document.querySelectorAll(".searchView").forEach(button => {
+    button.addEventListener("click", function(){
+      viewProduct(Number(this.dataset.id));
+    });
+  });
+}
+
+document.getElementById("searchBtn").addEventListener("click", searchProducts);
+document.getElementById("searchInput").addEventListener("keydown", function(e){
+  if (e.key === "Enter") searchProducts();
+});
+
+/* ===== Product page ===== */
+
+function viewProduct(id){
+  const product = products.find(item => Number(item.id) === Number(id));
+  if (!product) return;
+
+  const colors = ["Black", "Silver", "Blue", "Gold"];
+
+  openPage(product.name, `
+    <div class="pic">${product.image_url ? `<img src="${product.image_url}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">` : product.name}</div>
+    <span class="badge">✓ Verified seller</span>
+    <p>${product.description || "No description available."}</p>
+    <p>
+      <b>Category:</b> ${product.category || "—"}<br>
+      <b>Seller rating:</b> ⭐ ${sellerRatingFor(product)}<br>
+      <b>Price:</b> ${money(product.price)}
+    </p>
+
+    <div class="variant-block">
+      <div class="check-label">COLOR</div>
+      <div class="color-options">
+        ${colors.map((c,i) => `
+          <button class="color-swatch ${i===0?'selected':''}" data-color="${c}">${c}</button>
+        `).join("")}
+      </div>
+    </div>
+
+    <div class="variant-block">
+      <div class="check-label">QUANTITY</div>
+      <div class="qty-control">
+        <button class="qty-btn" id="qtyMinus">−</button>
+        <span class="qty-value" id="qtyDisplay">1</span>
+        <button class="qty-btn" id="qtyPlus">+</button>
+      </div>
+    </div>
+
+    <button class="primary full-btn" id="addProduct">Add to cart</button>
+  `);
+
+  let selectedColor = colors[0];
+  let selectedQty = 1;
+
+  document.querySelectorAll(".color-swatch").forEach(btn => {
+    btn.addEventListener("click", function(){
+      document.querySelectorAll(".color-swatch").forEach(b => b.classList.remove("selected"));
+      this.classList.add("selected");
+      selectedColor = this.dataset.color;
+    });
+  });
+
+  document.getElementById("qtyMinus").addEventListener("click", function(){
+    if (selectedQty > 1) selectedQty--;
+    document.getElementById("qtyDisplay").textContent = selectedQty;
+  });
+
+  document.getElementById("qtyPlus").addEventListener("click", function(){
+    selectedQty++;
+    document.getElementById("qtyDisplay").textContent = selectedQty;
+  });
+
+  document.getElementById("addProduct").addEventListener("click", function(){
+    addToCart(product.id, selectedColor, selectedQty);
+    closePage();
+    openCart();
+  });
+}
+
+function addToCart(id, color, qty){
+  const product = products.find(item => Number(item.id) === Number(id));
+  if (!product) return;
+  color = color || "Black";
+  qty = qty || 1;
+  const existing = cart.find(item => item.id === product.id && item.color === color);
+  if (existing){
+    existing.qty += qty;
+  } else {
+    cart.push({ ...product, color, qty });
+  }
+  document.getElementById("count").textContent = cart.reduce((s,it)=>s+it.qty,0);
+}
+
+/* ===== Cart page (Jumia-style) ===== */
+
+function cartSubtotal(){
+  return cart.reduce((sum, item) => sum + (Number(item.price || 0) * item.qty), 0);
+}
+
+function openCart(){
+  if (!cart.length){
+    openPage("Your Cart", `
+      <div class="empty-cart">
+        <p style="font-size:40px;margin:0">🛒</p>
+        <h3>Your cart is empty</h3>
+        <p class="muted">Browse products and add items to get started.</p>
+      </div>
+    `);
+    return;
+  }
+
+  const subtotal = cartSubtotal();
+  const deliveryFee = 2500;
+  const total = subtotal + deliveryFee;
+
+  openPage("Your Cart", `
+    <div class="cart-list">
+      ${cart.map((item, i) => `
+        <div class="cart-item">
+          <div class="cart-thumb">${item.name}</div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-price">${money(item.price)}</div>
+            <div class="qty-control">
+              <button class="qty-btn" data-i="${i}" data-dir="-1">−</button>
+              <span class="qty-value">${item.qty}</span>
+              <button class="qty-btn" data-i="${i}" data-dir="1">+</button>
+              <button class="remove-btn" data-i="${i}">Remove</button>
+            </div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="summary-box">
+      <div class="summary-row"><span>Subtotal</span><span>${money(subtotal)}</span></div>
+      <div class="summary-row"><span>Delivery fee</span><span>${money(deliveryFee)}</span></div>
+      <div class="summary-row summary-total"><span>Total</span><span>${money(total)}</span></div>
+    </div>
+
+    <button class="primary full-btn" id="checkoutButton">Proceed to checkout</button>
+  `);
+
+  document.querySelectorAll(".qty-btn").forEach(btn => {
+    btn.addEventListener("click", function(){
+      const i = Number(this.dataset.i);
+      const dir = Number(this.dataset.dir);
+      cart[i].qty += dir;
+      if (cart[i].qty < 1) cart.splice(i, 1);
+      document.getElementById("count").textContent = cart.reduce((s,it)=>s+it.qty,0);
+      openCart();
+    });
+  });
+
+  document.querySelectorAll(".remove-btn").forEach(btn => {
+    btn.addEventListener("click", function(){
+      const i = Number(this.dataset.i);
+      cart.splice(i, 1);
+      document.getElementById("count").textContent = cart.reduce((s,it)=>s+it.qty,0);
+      openCart();
+    });
+  });
+
+  document.getElementById("checkoutButton").addEventListener("click", checkout);
+}
+
+document.getElementById("cartBtn").addEventListener("click", openCart);
+
+/* ===== Checkout page (Jumia-style) ===== */
+
+let selectedPayment = "card";
+
+const PAYSTACK_PUBLIC_KEY = "pk_live_234e8f8e48bd10613eb15895bd01d14ccb62d987";
+
+function checkout(){
+  const subtotal = cartSubtotal();
+  const deliveryFee = 2500;
+  const total = subtotal + deliveryFee;
+
+  openPage("Checkout", `
+    <div class="check-section">
+      <div class="check-label">DELIVERY ADDRESS</div>
+      <div class="address-card">
+        <div class="address-icon">📍</div>
+        <div class="address-fields">
+          <input class="input" id="deliveryAddress" placeholder="Street address">
+          <input class="input" id="deliveryCity" placeholder="City / State">
+        </div>
+      </div>
+    </div>
+
+    <div class="check-section">
+      <div class="check-label">PAYMENT</div>
+      <p class="muted">You'll be taken to Paystack's secure checkout — pay by card, bank transfer, or USSD.</p>
+    </div>
+
+    <div class="summary-box">
+      <div class="summary-row"><span>Subtotal</span><span>${money(subtotal)}</span></div>
+      <div class="summary-row"><span>Delivery fee</span><span>${money(deliveryFee)}</span></div>
+      <div class="summary-row summary-total"><span>Total</span><span>${money(total)}</span></div>
+    </div>
+
+    <button class="primary full-btn" id="placeOrder">Pay ${money(total)}</button>
+  `);
+
+  document.getElementById("placeOrder").addEventListener("click", startPaystackPayment);
+}
+
+async function startPaystackPayment(){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user){
+    account();
+    return;
+  }
+
+  const address = document.getElementById("deliveryAddress").value.trim();
+  if (!address){
+    alert("Please enter your delivery address.");
+    return;
+  }
+
+  const total = cartSubtotal() + 2500;
+  const sellerId = cart[0] ? cart[0].seller_id : null;
+
+  let subaccountCode = null;
+  if (sellerId){
+    const { data: sellerApp } = await supabaseClient
+      .from("seller_applications")
+      .select("paystack_subaccount_code")
+      .eq("user_id", sellerId)
+      .eq("status", "approved")
+      .not("paystack_subaccount_code", "is", null)
+      .maybeSingle();
+    if (sellerApp) subaccountCode = sellerApp.paystack_subaccount_code;
+  }
+
+  const paystackConfig = {
+    key: PAYSTACK_PUBLIC_KEY,
+    email: user.email,
+    amount: Math.round(total * 100),
+    currency: "NGN",
+    ref: "SOCEX_" + Date.now(),
+    callback: function(response){
+      placeOrder(response.reference);
+    },
+    onClose: function(){}
+  };
+
+  // If the seller has a payout account set up, split the payment automatically.
+  // Otherwise the full amount goes to SOCEX and the seller is paid manually.
+  if (subaccountCode){
+    paystackConfig.subaccount = subaccountCode;
+    paystackConfig.bearer = "subaccount";
+  }
+
+  const handler = PaystackPop.setup(paystackConfig);
+  handler.openIframe();
+}
+
+/* ===== Account page ===== */
+
+async function account(){
+  if (!supabaseClient) return;
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  if (user){
+    const initial = user.email.charAt(0).toUpperCase();
+    openPage("Account", `
+      <div class="account-header">
+        <div class="account-avatar">${initial}</div>
+        <div class="account-email">${user.email}</div>
+      </div>
+
+      <div class="account-menu">
+        ${isAdmin ? `
+        <button class="account-menu-item" id="goAdminDashboard">
+          <span class="account-menu-icon">🛡️</span>
+          <span>Admin Dashboard</span>
+          <span class="account-menu-arrow">›</span>
+        </button>` : ""}
+        <button class="account-menu-item" id="goSellerCenter">
+          <span class="account-menu-icon">🏪</span>
+          <span>Seller Center</span>
+          <span class="account-menu-arrow">›</span>
+        </button>
+        <button class="account-menu-item" id="goMyOrders">
+          <span class="account-menu-icon">📦</span>
+          <span>My Orders</span>
+          <span class="account-menu-arrow">›</span>
+        </button>
+        <button class="account-menu-item" id="goWishlist">
+          <span class="account-menu-icon">❤️</span>
+          <span>My Wishlist</span>
+          <span class="account-menu-arrow">›</span>
+        </button>
+        <button class="account-menu-item" id="goMyCart">
+          <span class="account-menu-icon">🛒</span>
+          <span>My Cart</span>
+          <span class="account-menu-arrow">›</span>
+        </button>
+      </div>
+
+      <button class="logout-row" id="logout">Log out</button>
+    `);
+    if (isAdmin){
+      document.getElementById("goAdminDashboard").addEventListener("click", adminDashboard);
+    }
+    document.getElementById("goSellerCenter").addEventListener("click", sellerCenter);
+    document.getElementById("goMyOrders").addEventListener("click", myOrders);
+    document.getElementById("goWishlist").addEventListener("click", myWishlist);
+    document.getElementById("goMyCart").addEventListener("click", openCart);
+    document.getElementById("logout").addEventListener("click", async function(){
+      await supabaseClient.auth.signOut();
+      closePage();
+    });
+    return;
+  }
+
+  openPage("SOCEX Account", `
+    <input class="input" id="email" type="email" placeholder="Email">
+    <input class="input" id="password" type="password" placeholder="Password">
+    <button class="primary full-btn" id="loginButton">Log in</button>
+    <button class="ghost full-btn" id="signupButton" style="margin-top:10px">Create account</button>
+    <p id="authMessage" class="muted"></p>
+  `);
+
+  document.getElementById("loginButton").addEventListener("click", login);
+  document.getElementById("signupButton").addEventListener("click", signup);
+}
+
+document.getElementById("accountBtn").addEventListener("click", account);
+
+/* ===== Seller Center ===== */
+
+/* ===== My Orders (buyer) with tracking timeline ===== */
+
+const ORDER_STAGES = ["pending", "confirmed", "preparing", "handed_over", "completed"];
+const ORDER_STAGE_LABELS = {
+  pending: "Order Placed",
+  confirmed: "Seller Confirmed",
+  preparing: "Preparing",
+  handed_over: "Handed Over",
+  completed: "Completed"
+};
+
+function renderTimeline(status){
+  const currentIndex = ORDER_STAGES.indexOf(status);
+  return ORDER_STAGES.map((stage, i) => `
+    <div class="timeline-step ${i <= currentIndex ? "active" : ""}">
+      ${i < ORDER_STAGES.length - 1 ? `<div class="timeline-line"></div>` : ""}
+      <div class="timeline-dot">${i <= currentIndex ? "✓" : ""}</div>
+      <div class="timeline-label">${ORDER_STAGE_LABELS[stage]}</div>
+    </div>
+  `).join("");
+}
+
+async function myOrders(){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user){
+    account();
+    return;
+  }
+
+  openPage("My Orders", `<p class="muted">Loading your orders...</p>`);
+
+  const { data: orders, error } = await supabaseClient
+    .from("orders")
+    .select("*")
+    .eq("buyer_id", user.id)
+    .order("id", { ascending: false });
+
+  if (error){
+    document.getElementById("pageContent").innerHTML = `<p>Could not load orders: ${error.message}</p>`;
+    return;
+  }
+
+  if (!orders.length){
+    document.getElementById("pageContent").innerHTML = `<p class="muted">You haven't placed any orders yet.</p>`;
+    return;
+  }
+
+  const { data: myReviews } = await supabaseClient
+    .from("reviews")
+    .select("order_id")
+    .eq("buyer_id", user.id);
+  const reviewedOrderIds = new Set((myReviews || []).map(r => r.order_id));
+
+  document.getElementById("pageContent").innerHTML = orders.map(o => `
+    <div class="summary-box">
+      <div class="row">
+        <b>Order #${o.id}</b>
+        <span class="muted">${money(o.total)}</span>
+      </div>
+      <div class="timeline">${renderTimeline(o.status)}</div>
+      ${o.status === "completed" && !reviewedOrderIds.has(o.id) ? `<button class="ghost full-btn rateOrderBtn" data-id="${o.id}" data-seller="${o.seller_id}">⭐ Rate this order</button>` : ""}
+      ${o.status === "completed" && reviewedOrderIds.has(o.id) ? `<p class="muted">✓ You rated this order</p>` : ""}
+    </div>
+  `).join("");
+
+  document.querySelectorAll(".rateOrderBtn").forEach(btn => {
+    btn.addEventListener("click", function(){
+      openReviewForm(Number(this.dataset.id), this.dataset.seller);
+    });
+  });
+}
+
+function openReviewForm(orderId, sellerId){
+  let selectedRating = 0;
+
+  openPage("Rate Your Order", `
+    <p class="muted">How was your experience with this seller?</p>
+    <div class="star-picker" id="starPicker">
+      ${[1,2,3,4,5].map(n => `<span class="star" data-star="${n}">★</span>`).join("")}
+    </div>
+    <textarea class="input" id="reviewComment" placeholder="Leave a comment (optional)" rows="3"></textarea>
+    <button class="primary full-btn" id="submitReview">Submit review</button>
+    <p id="reviewMessage" class="muted"></p>
+  `);
+
+  document.querySelectorAll("#starPicker .star").forEach(star => {
+    star.addEventListener("click", function(){
+      selectedRating = Number(this.dataset.star);
+      document.querySelectorAll("#starPicker .star").forEach(s => {
+        s.classList.toggle("filled", Number(s.dataset.star) <= selectedRating);
+      });
+    });
+  });
+
+  document.getElementById("submitReview").addEventListener("click", async function(){
+    if (!selectedRating){
+      document.getElementById("reviewMessage").textContent = "Please select a star rating.";
+      return;
+    }
+
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    const comment = document.getElementById("reviewComment").value.trim();
+
+    const { error } = await supabaseClient
+      .from("reviews")
+      .insert({
+        order_id: orderId,
+        buyer_id: user.id,
+        seller_id: sellerId,
+        rating: selectedRating,
+        comment
+      });
+
+    if (error){
+      document.getElementById("reviewMessage").textContent = error.message;
+      return;
+    }
+
+    closePage();
+    myOrders();
+  });
+}
+
+/* ===== My Wishlist ===== */
+
+/* ===== Admin Dashboard ===== */
+
+async function adminDashboard(){
+  if (!isAdmin){
+    closePage();
+    return;
+  }
+
+  openPage("Admin Dashboard", `<p class="muted">Loading...</p>`);
+
+  const { data: pendingApps } = await supabaseClient
+    .from("seller_applications")
+    .select("*")
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  const { data: pendingWithdrawals } = await supabaseClient
+    .from("withdrawals")
+    .select("*")
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+
+  const apps = pendingApps || [];
+  const withdrawals = pendingWithdrawals || [];
+
+  document.getElementById("pageContent").innerHTML = `
+    <div class="check-label">PENDING SELLER APPLICATIONS (${apps.length})</div>
+    ${apps.length ? apps.map(a => `
+      <div class="summary-box">
+        <p><b>Matric:</b> ${a.matric_number || "—"}</p>
+        <p><b>Phone:</b> ${a.phone_number || "—"}</p>
+        <p class="muted">Submitted ${new Date(a.created_at).toLocaleDateString()}</p>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="primary approveAppBtn" data-id="${a.id}" style="flex:1">Approve</button>
+          <button class="ghost rejectAppBtn" data-id="${a.id}" style="flex:1">Reject</button>
+        </div>
+      </div>
+    `).join("") : `<p class="muted" style="margin-bottom:20px">No pending applications.</p>`}
+
+    <div class="check-label">PENDING WITHDRAWALS (${withdrawals.length})</div>
+    ${withdrawals.length ? withdrawals.map(w => `
+      <div class="summary-box">
+        <p><b>${money(w.amount)}</b></p>
+        <p class="muted">${w.bank_name} — ${w.account_number} (${w.account_name})</p>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="primary approveWithdrawBtn" data-id="${w.id}" style="flex:1">Mark Paid</button>
+          <button class="ghost rejectWithdrawBtn" data-id="${w.id}" style="flex:1">Reject</button>
+        </div>
+      </div>
+    `).join("") : `<p class="muted">No pending withdrawals.</p>`}
+  `;
+
+  const EDGE_FUNCTION_BASE = `${SUPABASE_URL}/functions/v1`;
+
+document.querySelectorAll(".approveAppBtn").forEach(btn => {
+    btn.addEventListener("click", async function(){
+      const id = Number(this.dataset.id);
+      const app = apps.find(a => a.id === id);
+      const btnEl = this;
+      btnEl.disabled = true;
+      btnEl.textContent = "Setting up payout account...";
+
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const res = await fetch(`${EDGE_FUNCTION_BASE}/create-subaccount`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({
+            seller_application_id: id,
+            business_name: app.account_name || "SOCEX Seller",
+            bank_code: app.bank_code,
+            account_number: app.account_number,
+            percentage_charge: 5
+          })
+        });
+        const result = await res.json();
+
+        if (result.error){
+          alert("Payout account setup failed: " + result.error + "\n\nApplication will still be approved, but automatic payouts won't work for this seller until this is fixed.");
+        }
+      } catch (err){
+        alert("Could not reach payout setup function: " + err.message);
+      }
+
+      await supabaseClient.from("seller_applications").update({ status: "approved" }).eq("id", id);
+      await notifyUser(app.user_id, "Seller application approved", "You're now a verified SOCEX seller. Start listing products!");
+      adminDashboard();
+    });
+  });
+
+  document.querySelectorAll(".rejectAppBtn").forEach(btn => {
+    btn.addEventListener("click", async function(){
+      const id = Number(this.dataset.id);
+      const app = apps.find(a => a.id === id);
+      await supabaseClient.from("seller_applications").update({ status: "rejected" }).eq("id", id);
+      await notifyUser(app.user_id, "Seller application rejected", "Your seller application wasn't approved. Contact SOCEX support for details.");
+      adminDashboard();
+    });
+  });
+
+  document.querySelectorAll(".approveWithdrawBtn").forEach(btn => {
+    btn.addEventListener("click", async function(){
+      const id = Number(this.dataset.id);
+      const w = withdrawals.find(x => x.id === id);
+      const btnEl = this;
+      btnEl.disabled = true;
+      btnEl.textContent = "Sending...";
+
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const res = await fetch(`${EDGE_FUNCTION_BASE}/send-withdrawal`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({ withdrawal_id: id })
+        });
+        const result = await res.json();
+
+        if (result.error){
+          alert("Transfer failed: " + result.error);
+          btnEl.disabled = false;
+          btnEl.textContent = "Mark Paid";
+          return;
+        }
+      } catch (err){
+        alert("Could not reach transfer function: " + err.message);
+        btnEl.disabled = false;
+        btnEl.textContent = "Mark Paid";
+        return;
+      }
+
+      await notifyUser(w.seller_id, "Withdrawal paid", `Your withdrawal of ${money(w.amount)} has been sent to your bank.`);
+      adminDashboard();
+    });
+  });
+
+  document.querySelectorAll(".rejectWithdrawBtn").forEach(btn => {
+    btn.addEventListener("click", async function(){
+      const id = Number(this.dataset.id);
+      const w = withdrawals.find(x => x.id === id);
+      await supabaseClient.from("withdrawals").update({ status: "rejected" }).eq("id", id);
+      await notifyUser(w.seller_id, "Withdrawal rejected", `Your withdrawal request of ${money(w.amount)} was rejected. Contact SOCEX support.`);
+      adminDashboard();
+    });
+  });
+}
+
+async function myWishlist(){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user){
+    account();
+    return;
+  }
+
+  openPage("My Wishlist", `<p class="muted">Loading...</p>`);
+
+  const { data, error } = await supabaseClient
+    .from("wishlists")
+    .select("product_id, products(*)")
+    .eq("user_id", user.id);
+
+  if (error){
+    document.getElementById("pageContent").innerHTML = `<p>Could not load wishlist: ${error.message}</p>`;
+    return;
+  }
+
+  if (!data.length){
+    document.getElementById("pageContent").innerHTML = `<p class="muted">Your wishlist is empty. Tap the heart on any product to save it here.</p>`;
+    return;
+  }
+
+  document.getElementById("pageContent").innerHTML = data.map(w => `
+    <div class="cart-item">
+      <div class="cart-thumb">${w.products.image_url ? `<img src="${w.products.image_url}" alt="${w.products.name}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">` : w.products.name}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${w.products.name}</div>
+        <div class="cart-item-price">${money(w.products.price)}</div>
+        <button class="ghost viewWishProduct" data-id="${w.products.id}" style="margin-top:6px">View product</button>
+      </div>
+    </div>
+  `).join("");
+
+  document.querySelectorAll(".viewWishProduct").forEach(btn => {
+    btn.addEventListener("click", function(){
+      viewProduct(Number(this.dataset.id));
+    });
+  });
+}
+
+async function sellerCenter(){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user){
+    account();
+    return;
+  }
+
+  openPage("Seller Center", `<p class="muted">Loading...</p>`);
+
+  const { data: myProducts, error } = await supabaseClient
+    .from("products")
+    .select("*")
+    .eq("seller_id", user.id)
+    .order("id", { ascending: false });
+
+  if (error){
+    document.getElementById("pageContent").innerHTML = `<p>Could not load your products: ${error.message}</p>`;
+    return;
+  }
+
+  const { data: mySales } = await supabaseClient
+    .from("orders")
+    .select("*")
+    .eq("seller_id", user.id)
+    .order("id", { ascending: false });
+
+  const orders = mySales || [];
+  const completedOrders = orders.filter(o => o.status === "completed");
+  const salesCount = completedOrders.length;
+  const isVerified = salesCount >= 20;
+
+  const { data: myWithdrawals } = await supabaseClient
+    .from("withdrawals")
+    .select("*")
+    .eq("seller_id", user.id);
+
+  const HOLD_HOURS = 12;
+  const now = new Date();
+
+  const unlockedOrders = completedOrders.filter(o => {
+    if (!o.completed_at) return false;
+    const unlockTime = new Date(o.completed_at).getTime() + HOLD_HOURS * 60 * 60 * 1000;
+    return now.getTime() >= unlockTime;
+  });
+  const lockedOrders = completedOrders.filter(o => !unlockedOrders.includes(o));
+
+  const totalEarned = unlockedOrders.reduce((s, o) => s + Number(o.total || 0), 0);
+  const lockedAmount = lockedOrders.reduce((s, o) => s + Number(o.total || 0), 0);
+  const totalWithdrawn = (myWithdrawals || [])
+    .filter(w => w.status !== "rejected")
+    .reduce((s, w) => s + Number(w.amount || 0), 0);
+  const balance = totalEarned - totalWithdrawn;
+
+  let nextUnlockText = "";
+  if (lockedOrders.length){
+    const soonest = lockedOrders
+      .map(o => new Date(o.completed_at).getTime() + HOLD_HOURS * 60 * 60 * 1000)
+      .sort((a,b) => a-b)[0];
+    const hoursLeft = Math.max(0, Math.ceil((soonest - now.getTime()) / (60*60*1000)));
+    nextUnlockText = `${money(lockedAmount)} unlocks in ~${hoursLeft}h`;
+  }
+
+  document.getElementById("pageContent").innerHTML = `
+    <div class="wallet-card">
+      <div class="wallet-label">AVAILABLE BALANCE</div>
+      <div class="wallet-amount">${money(balance)}</div>
+      ${nextUnlockText ? `<p class="muted" style="color:#c8d4e3;margin-bottom:10px">${nextUnlockText}</p>` : ""}
+      <button class="primary full-btn" id="withdrawBtn" ${balance <= 0 ? "disabled" : ""}>Withdraw</button>
+    </div>
+
+    ${isVerified ? `<div class="badge" style="margin-bottom:14px;display:inline-block">✓ Verified Seller — ${salesCount} sales</div>` : `<p class="muted" style="margin-bottom:14px">${salesCount}/20 completed sales toward Verified Seller badge</p>`}
+
+    <button class="primary full-btn" id="addNewProduct" style="margin-bottom:20px">+ List a new product</button>
+
+    <div class="check-label">MY SALES (${orders.length})</div>
+    ${orders.length ? orders.map(o => `
+      <div class="summary-box">
+        <div class="row">
+          <b>Order #${o.id}</b>
+          <span class="muted">${money(o.total)}</span>
+        </div>
+        <p class="muted" style="margin:4px 0 10px">Status: ${ORDER_STAGE_LABELS[o.status] || o.status}</p>
+        ${o.status !== "completed" ? `<button class="ghost full-btn advanceOrderBtn" data-id="${o.id}" data-status="${o.status}" data-buyer="${o.buyer_id}">Advance to next stage</button>` : ""}
+        ${o.status === "handed_over" ? `<div style="margin-top:8px"><input class="input codeCheckInput" id="codeCheck${o.id}" placeholder="Enter buyer's handover code"><button class="primary full-btn confirmHandoverBtn" data-id="${o.id}" data-code="${o.handover_code}">Confirm & Complete</button></div>` : ""}
+      </div>
+    `).join("") : `<p class="muted" style="margin-bottom:20px">No sales yet.</p>`}
+
+    <div class="check-label">MY PRODUCTS (${myProducts.length})</div>
+
+    ${myProducts.length ? myProducts.map(p => `
+      <div class="cart-item">
+        <div class="cart-thumb">${p.image_url ? `<img src="${p.image_url}" alt="${p.name}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">` : p.name}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${p.name}</div>
+          <div class="cart-item-price">${money(p.price)}</div>
+          <div class="muted" style="font-size:12px">${p.category || "—"}</div>
+        </div>
+      </div>
+    `).join("") : `<p class="muted">You haven't listed any products yet.</p>`}
+  `;
+
+  document.getElementById("withdrawBtn").addEventListener("click", function(){
+    withdrawalForm(balance);
+  });
+
+  document.querySelectorAll(".advanceOrderBtn").forEach(btn => {
+    btn.addEventListener("click", async function(){
+      const orderId = Number(this.dataset.id);
+      const currentStatus = this.dataset.status;
+      const buyerId = this.dataset.buyer;
+      const idx = ORDER_STAGES.indexOf(currentStatus);
+      const nextStatus = ORDER_STAGES[idx + 1];
+      if (!nextStatus) return;
+
+      await supabaseClient.from("orders").update({ status: nextStatus }).eq("id", orderId);
+      await notifyUser(buyerId, "Order update", `Your order #${orderId} is now: ${ORDER_STAGE_LABELS[nextStatus]}.`);
+      sellerCenter();
+    });
+  });
+
+  document.querySelectorAll(".confirmHandoverBtn").forEach(btn => {
+    btn.addEventListener("click", async function(){
+      const orderId = Number(this.dataset.id);
+      const realCode = this.dataset.code;
+      const entered = document.getElementById("codeCheck" + orderId).value.trim();
+
+      if (entered !== realCode){
+        alert("Code doesn't match. Ask the buyer for their correct handover code.");
+        return;
+      }
+
+      await supabaseClient.from("orders").update({ status: "completed", delivery_confirmed: true, completed_at: new Date().toISOString() }).eq("id", orderId);
+      sellerCenter();
+    });
+  });
+
+  document.getElementById("addNewProduct").addEventListener("click", sellPage);
+}
+
+async function withdrawalForm(availableBalance){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  const { data: myApp } = await supabaseClient
+    .from("seller_applications")
+    .select("bank_code, bank_name, account_number, account_name")
+    .eq("user_id", user.id)
+    .eq("status", "approved")
+    .maybeSingle();
+
+  openPage("Withdraw Funds", `
+    <p class="muted">Available balance: <b>${money(availableBalance)}</b></p>
+    <label>Amount (₦)</label>
+    <input class="input" id="withdrawAmount" type="number" placeholder="e.g. 5000">
+    <div class="summary-box">
+      <div class="check-label">PAYOUT ACCOUNT</div>
+      <p style="margin:4px 0">${myApp ? `${myApp.bank_name} — ${myApp.account_number} (${myApp.account_name})` : "No payout account on file. Contact SOCEX support."}</p>
+    </div>
+    <button class="primary full-btn" id="submitWithdraw" ${!myApp ? "disabled" : ""}>Request withdrawal</button>
+    <p id="withdrawMessage" class="muted"></p>
+  `);
+
+  document.getElementById("submitWithdraw").addEventListener("click", async function(){
+    const amount = Number(document.getElementById("withdrawAmount").value);
+
+    if (!amount){
+      document.getElementById("withdrawMessage").textContent = "Please enter an amount.";
+      return;
+    }
+
+    if (amount > availableBalance){
+      document.getElementById("withdrawMessage").textContent = "Amount exceeds your available balance.";
+      return;
+    }
+
+    const { error } = await supabaseClient
+      .from("withdrawals")
+      .insert({
+        seller_id: user.id,
+        amount,
+        bank_code: myApp.bank_code,
+        bank_name: myApp.bank_name,
+        account_number: myApp.account_number,
+        account_name: myApp.account_name,
+        status: "pending"
+      });
+
+    if (error){
+      document.getElementById("withdrawMessage").textContent = error.message;
+      return;
+    }
+
+    openPage("Request Submitted", `
+      <p>✓ Your withdrawal request for ${money(amount)} has been submitted.</p>
+      <p class="muted">Note: payouts are processed manually for now — you'll be paid within 1-2 business days once approved.</p>
+      <button class="primary full-btn" id="doneWithdraw">Done</button>
+    `);
+    document.getElementById("doneWithdraw").addEventListener("click", sellerCenter);
+  });
+}
+
+
+
+/* ===== Sell / Seller Verification flow ===== */
+
+let pendingAction = null; // tracks what the user wanted to do before login was required
+
+async function sellPage(){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  if (!user){
+    pendingAction = "sell";
+    account();
+    return;
+  }
+
+  const { data: application } = await supabaseClient
+    .from("seller_applications")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("id", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!application){
+    sellerVerificationStart();
+    return;
+  }
+
+  if (application.status === "pending"){
+    openPage("Application Under Review", `
+      <p>⏳ Your seller application is being reviewed.</p>
+      <p class="muted">This usually takes 1-2 business days. You'll be able to list products once approved.</p>
+    `);
+    return;
+  }
+
+  if (application.status === "rejected"){
+    openPage("Application Rejected", `
+      <p>Your previous seller application was not approved.</p>
+      <button class="primary full-btn" id="reapply">Apply again</button>
+    `);
+    document.getElementById("reapply").addEventListener("click", sellerVerificationStart);
+    return;
+  }
+
+  // approved
+  openPage("List a Product", `
+    <label>Product name</label>
+    <input class="input" id="sellName" placeholder="e.g. iPhone 13 128GB">
+    <label>Description</label>
+    <input class="input" id="sellDescription" placeholder="Brief description">
+    <label>Category</label>
+    <select class="input" id="sellCategory">
+      <option>Electronics</option>
+      <option>Fashion</option>
+      <option>Computing</option>
+      <option>Home</option>
+    </select>
+    <label>Price (₦)</label>
+    <input class="input" id="sellPrice" type="number" placeholder="e.g. 50000">
+    <label>Product photos</label>
+    <p class="muted" style="margin-top:0">Camera only — gallery uploads aren't accepted, so buyers see the real item. First photo is required; the other two are optional.</p>
+    <input class="input" id="sellPhoto" type="file" accept="image/*" capture="environment">
+    <input class="input" id="sellPhoto2" type="file" accept="image/*" capture="environment">
+    <input class="input" id="sellPhoto3" type="file" accept="image/*" capture="environment">
+    <button class="primary" id="submitProduct">List product</button>
+    <p id="sellMessage" class="muted"></p>
+  `);
+
+  document.getElementById("submitProduct").addEventListener("click", submitProduct);
+}
+
+
+
+/* ===== Seller verification: email code step ===== */
+
+async function sellerVerificationStart(){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) return;
+
+  openPage("Become a Seller", `
+    <div class="onboarding-hero">
+      <div class="onboarding-icon">🏪</div>
+      <h3>Let's get you verified</h3>
+      <p class="muted">A few quick steps to activate your selling account on SOCEX.</p>
+    </div>
+
+    <div class="step-tracker">
+      <div class="step-dot done"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+    </div>
+
+    <div class="step-list">
+      <div class="step-list-item"><span class="step-num">1</span> Verify your email with a code</div>
+      <div class="step-list-item"><span class="step-num">2</span> Upload your student ID (PDF)</div>
+      <div class="step-list-item"><span class="step-num">3</span> Add matric number & phone</div>
+      <div class="step-list-item"><span class="step-num">4</span> Take a live face photo</div>
+      <div class="step-list-item"><span class="step-num">5</span> Pay the ₦2,000 account fee</div>
+    </div>
+
+    <button class="primary full-btn" id="sendCode">Send verification code</button>
+    <p id="verifyMessage" class="muted"></p>
+  `);
+
+  document.getElementById("sendCode").addEventListener("click", async function(){
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email: user.email,
+      options: { shouldCreateUser: false }
+    });
+
+    if (error){
+      document.getElementById("verifyMessage").textContent = error.message;
+      return;
+    }
+
+    sellerVerificationEnterCode(user.email);
+  });
+}
+
+function sellerVerificationEnterCode(email){
+  openPage("Enter Verification Code", `
+    <p>We sent a 6-digit code to <b>${email}</b>. Enter it below.</p>
+    <div class="otp-boxes" id="entryOtpBoxes">
+      ${[0,1,2,3,4,5,6,7].map(i => `<input class="otp-box" maxlength="1" inputmode="numeric" data-otp-index="${i}">`).join("")}
+    </div>
+    <button class="primary full-btn" id="confirmCode">Confirm code</button>
+    <p id="otpMessage" class="muted"></p>
+  `);
+
+  const otpInputs = Array.from(document.querySelectorAll("#entryOtpBoxes .otp-box"));
+  otpInputs.forEach((box, i) => {
+    box.addEventListener("input", function(){
+      this.value = this.value.replace(/[^0-9]/g, "");
+      if (this.value && otpInputs[i+1]) otpInputs[i+1].focus();
+    });
+    box.addEventListener("keydown", function(e){
+      if (e.key === "Backspace" && !this.value && otpInputs[i-1]) otpInputs[i-1].focus();
+    });
+  });
+
+  document.getElementById("confirmCode").addEventListener("click", async function(){
+    const token = otpInputs.map(b => b.value).join("");
+
+    if (token.length !== 8){
+      document.getElementById("otpMessage").textContent = "Please enter all 8 digits.";
+      return;
+    }
+
+    const { error } = await supabaseClient.auth.verifyOtp({
+      email,
+      token,
+      type: "email"
+    });
+
+    if (error){
+      document.getElementById("otpMessage").textContent = error.message;
+      return;
+    }
+
+    sellerDocumentUpload();
+  });
+}
+
+/* ===== Seller verification: document upload step ===== */
+
+function sellerDocumentUpload(){
+  openPage("Upload Document", `
+    <p>Email verified ✓</p>
+    <p class="muted">Upload a PDF of your student ID card (max 5MB) for review. Your application is only approved after an admin manually verifies this document.</p>
+    <input class="input" id="docFile" type="file" accept="application/pdf">
+    <button class="primary full-btn" id="continueToDetails">Continue</button>
+    <p id="docMessage" class="muted"></p>
+  `);
+
+  document.getElementById("continueToDetails").addEventListener("click", async function(){
+    const fileInput = document.getElementById("docFile");
+    const file = fileInput.files[0];
+
+    if (!file){
+      document.getElementById("docMessage").textContent = "Please choose a PDF file.";
+      return;
+    }
+    if (file.type !== "application/pdf"){
+      document.getElementById("docMessage").textContent = "Only PDF files are accepted.";
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024){
+      document.getElementById("docMessage").textContent = "File must be under 5MB.";
+      return;
+    }
+
+    document.getElementById("docMessage").textContent = "Checking file...";
+
+    const header = await file.slice(0, 5).text();
+    if (header !== "%PDF-"){
+      document.getElementById("docMessage").textContent = "This file doesn't look like a genuine PDF. Please re-export or re-scan your ID and try again.";
+      return;
+    }
+
+    sellerDetailsForm(file);
+  });
+}
+
+/* ===== Seller verification: matric + phone ===== */
+
+const NIGERIAN_BANKS = [
+  { name: "Access Bank", code: "044" },
+  { name: "First Bank of Nigeria", code: "011" },
+  { name: "GTBank", code: "058" },
+  { name: "Zenith Bank", code: "057" },
+  { name: "UBA", code: "033" },
+  { name: "Fidelity Bank", code: "070" },
+  { name: "Union Bank", code: "032" },
+  { name: "Sterling Bank", code: "232" },
+  { name: "Wema Bank", code: "035" },
+  { name: "Stanbic IBTC", code: "221" },
+  { name: "Ecobank", code: "050" },
+  { name: "FCMB", code: "214" },
+  { name: "Unity Bank", code: "215" },
+  { name: "Polaris Bank", code: "076" },
+  { name: "Keystone Bank", code: "082" },
+  { name: "Kuda Bank", code: "50211" },
+  { name: "OPay", code: "999992" },
+  { name: "PalmPay", code: "999991" },
+  { name: "Moniepoint MFB", code: "50515" }
+];
+
+function sellerDetailsForm(idDocFile){
+  openPage("Your Details", `
+    <label>Matric number</label>
+    <input class="input" id="matricNumber" placeholder="e.g. FUNAAB/2021/0123">
+    <label>Phone number</label>
+    <input class="input" id="sellerPhone" type="tel" placeholder="e.g. 0803xxxxxxx">
+
+    <div class="check-label" style="margin-top:16px">PAYOUT BANK DETAILS</div>
+    <p class="muted" style="margin-top:0">This is where your sales money will be sent.</p>
+    <label>Bank</label>
+    <select class="input" id="sellerBank">
+      <option value="">Select your bank</option>
+      ${NIGERIAN_BANKS.map(b => `<option value="${b.code}">${b.name}</option>`).join("")}
+    </select>
+    <label>Account number</label>
+    <input class="input" id="sellerAccountNumber" inputmode="numeric" placeholder="10-digit account number">
+    <label>Account name</label>
+    <input class="input" id="sellerAccountName" placeholder="Name on the account">
+
+    <button class="primary full-btn" id="continueToFee">Continue</button>
+    <p id="detailsMessage" class="muted"></p>
+  `);
+
+  document.getElementById("continueToFee").addEventListener("click", async function(){
+    const matric = document.getElementById("matricNumber").value.trim();
+    const phone = document.getElementById("sellerPhone").value.trim();
+    const bankSelect = document.getElementById("sellerBank");
+    const bank_code = bankSelect.value;
+    const bank_name = bankSelect.options[bankSelect.selectedIndex].text;
+    const account_number = document.getElementById("sellerAccountNumber").value.trim();
+    const account_name = document.getElementById("sellerAccountName").value.trim();
+
+    if (!matric || !phone || !bank_code || !account_number || !account_name){
+      document.getElementById("detailsMessage").textContent = "Please fill in all fields.";
+      return;
+    }
+
+    const bankDetails = { bank_code, bank_name, account_number, account_name };
+
+    const { count } = await supabaseClient
+      .from("seller_applications")
+      .select("*", { count: "exact", head: true });
+
+    if ((count || 0) < 5){
+      sellerFeeSendCode(idDocFile, matric, phone, bankDetails, true);
+    } else {
+      sellerFeeStep(idDocFile, matric, phone, bankDetails);
+    }
+  });
+}
+
+/* ===== Seller verification: ₦2,000 account fee ===== */
+
+function sellerFeeStep(idDocFile, matric, phone, bankDetails){
+  openPage("Seller Account Fee", `
+    <p>A one-time <b>₦2,000</b> fee is required to activate your selling account.</p>
+    <button class="primary full-btn" id="payFee">Pay ₦2,000</button>
+    <p id="feeMessage" class="muted"></p>
+  `);
+
+  document.getElementById("payFee").addEventListener("click", async function(){
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    const btn = document.getElementById("payFee");
+    btn.disabled = true;
+
+    const handler = PaystackPop.setup({
+      key: PAYSTACK_PUBLIC_KEY,
+      email: user.email,
+      amount: 200000,
+      currency: "NGN",
+      ref: "SOCEXFEE_" + Date.now(),
+      callback: function(response){
+        sellerFeeSendCode(idDocFile, matric, phone, bankDetails, response.reference);
+      },
+      onClose: function(){
+        btn.disabled = false;
+      }
+    });
+
+    handler.openIframe();
+  });
+}
+
+async function sellerFeeSendCode(idDocFile, matric, phone, bankDetails, paymentReference, waived){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  openPage("Confirm Your Email", `<p class="muted">${waived ? "You're one of our first 5 sellers — the ₦2,000 fee is waived! " : "Payment received. "}Sending a confirmation code to your email...</p>`);
+
+  const { error } = await supabaseClient.auth.signInWithOtp({
+    email: user.email,
+    options: { shouldCreateUser: false }
+  });
+
+  if (error){
+    document.getElementById("pageContent").innerHTML = `<p>${error.message}</p>`;
+    return;
+  }
+
+  document.getElementById("pageContent").innerHTML = `
+    <p>${waived ? "🎉 Your ₦2,000 fee has been waived as an early seller!" : "Your payment was successful ✓"}</p>
+    <p class="muted">Enter the code sent to ${user.email} to unlock your seller account.</p>
+    <div class="otp-boxes" id="otpBoxes">
+      ${[0,1,2,3,4,5].map(i => `<input class="otp-box" maxlength="1" inputmode="numeric" data-otp-index="${i}">`).join("")}
+    </div>
+    <button class="primary full-btn" id="confirmFeeCode">Confirm & Submit</button>
+    <p id="feeConfirmMessage" class="muted"></p>
+  `;
+
+  const otpInputs = Array.from(document.querySelectorAll("#otpBoxes .otp-box"));
+  otpInputs.forEach((box, i) => {
+    box.addEventListener("input", function(){
+      this.value = this.value.replace(/[^0-9]/g, "");
+      if (this.value && otpInputs[i+1]) otpInputs[i+1].focus();
+    });
+    box.addEventListener("keydown", function(e){
+      if (e.key === "Backspace" && !this.value && otpInputs[i-1]) otpInputs[i-1].focus();
+    });
+  });
+
+  document.getElementById("confirmFeeCode").addEventListener("click", async function(){
+    const token = otpInputs.map(b => b.value).join("");
+    if (token.length !== 6){
+      document.getElementById("feeConfirmMessage").textContent = "Please enter all 6 digits.";
+      return;
+    }
+
+    const { error: verifyError } = await supabaseClient.auth.verifyOtp({
+      email: user.email,
+      token,
+      type: "email"
+    });
+
+    if (verifyError){
+      document.getElementById("feeConfirmMessage").textContent = verifyError.message;
+      return;
+    }
+
+    document.getElementById("feeConfirmMessage").textContent = "Submitting your application...";
+    await submitSellerApplication(idDocFile, matric, phone, bankDetails, paymentReference);
+  });
+}
+
+async function submitSellerApplication(idDocFile, matric, phone, bankDetails, paymentReference){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  const msgEl = document.getElementById("feeConfirmMessage") || document.getElementById("feeMessage");
+
+  const idPath = `${user.id}/id_${Date.now()}_${idDocFile.name}`;
+  const { error: idUploadError } = await supabaseClient.storage
+    .from("seller-documents")
+    .upload(idPath, idDocFile);
+
+  if (idUploadError){
+    msgEl.textContent = "ID upload failed: " + idUploadError.message + " (check the 'seller-documents' bucket exists in Supabase Storage)";
+    return;
+  }
+
+  const { error: insertError } = await supabaseClient
+    .from("seller_applications")
+    .insert({
+      user_id: user.id,
+      document_url: idPath,
+      matric_number: matric,
+      phone_number: phone,
+      face_photo_url: null,
+      fee_paid: true,
+      payment_reference: paymentReference,
+      bank_code: bankDetails.bank_code,
+      bank_name: bankDetails.bank_name,
+      account_number: bankDetails.account_number,
+      account_name: bankDetails.account_name,
+      status: "pending"
+    });
+
+  if (insertError){
+    msgEl.textContent = insertError.message;
+    return;
+  }
+
+  await notifyAdmins("New seller application", `${user.email} submitted a seller application.`);
+
+  openPage("Application Submitted", `
+    <p>✓ Your seller application has been submitted.</p>
+    <p class="muted">We'll review your matric number, ID, and photo, and get back to you shortly. This usually takes 1-2 business days.</p>
+    <button class="primary full-btn" id="doneApplication">Done</button>
+  `);
+  document.getElementById("doneApplication").addEventListener("click", closePage);
+}
+
+async function submitProduct(){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user){
+    account();
+    return;
+  }
+
+  const name = document.getElementById("sellName").value.trim();
+  const description = document.getElementById("sellDescription").value.trim();
+  const category = document.getElementById("sellCategory").value;
+  const price = Number(document.getElementById("sellPrice").value);
+  const photoFile = document.getElementById("sellPhoto").files[0];
+  const photoFile2 = document.getElementById("sellPhoto2").files[0];
+  const photoFile3 = document.getElementById("sellPhoto3").files[0];
+
+  if (!name || !price){
+    document.getElementById("sellMessage").textContent = "Please fill in at least a name and price.";
+    return;
+  }
+
+  if (!photoFile){
+    document.getElementById("sellMessage").textContent = "Please take a photo of the product.";
+    return;
+  }
+
+  document.getElementById("sellMessage").textContent = "Uploading photos...";
+
+  const photoPath = `${user.id}/product_${Date.now()}_${photoFile.name}`;
+  const { error: photoError } = await supabaseClient.storage
+    .from("socex-media")
+    .upload(photoPath, photoFile);
+
+  if (photoError){
+    document.getElementById("sellMessage").textContent = photoError.message;
+    return;
+  }
+
+  const { data: publicUrlData } = supabaseClient.storage
+    .from("socex-media")
+    .getPublicUrl(photoPath);
+
+  const { data: newProduct, error } = await supabaseClient
+    .from("products")
+    .insert({
+      name,
+      description,
+      category,
+      price,
+      rating: 0,
+      seller_id: user.id,
+      image_url: publicUrlData.publicUrl
+    })
+    .select()
+    .single();
+
+  if (error){
+    document.getElementById("sellMessage").textContent = error.message;
+    return;
+  }
+
+  const extraFiles = [photoFile2, photoFile3].filter(Boolean);
+  for (const extraFile of extraFiles){
+    const extraPath = `${user.id}/product_${Date.now()}_${extraFile.name}`;
+    const { error: extraUploadError } = await supabaseClient.storage
+      .from("socex-media")
+      .upload(extraPath, extraFile);
+
+    if (!extraUploadError){
+      const { data: extraUrlData } = supabaseClient.storage
+        .from("socex-media")
+        .getPublicUrl(extraPath);
+
+      await supabaseClient.from("product_images").insert({
+        product_id: newProduct.id,
+        image_url: extraUrlData.publicUrl
+      });
+    }
+  }
+
+  closePage();
+  loadProducts();
+}
+
+async function login(){
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+  if (error){
+    document.getElementById("authMessage").textContent = error.message;
+    return;
+  }
+
+  document.getElementById("splashScreen").classList.add("hidden");
+  document.getElementById("roleSelect").classList.add("hidden");
+
+  closePage();
+
+  if (pendingAction === "sell"){
+    pendingAction = null;
+    sellPage();
+  } else if (pendingRole === "seller"){
+    pendingRole = null;
+    sellerOnboarding();
+  } else if (pendingRole === "buyer"){
+    pendingRole = null;
+    buyerPhoneCheck();
+  }
+}
+
+async function signup(){
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  const { error } = await supabaseClient.auth.signUp({ email, password });
+
+  if (error){
+    document.getElementById("authMessage").textContent = error.message;
+    return;
+  }
+  document.getElementById("authMessage").textContent = "Account created. Check your email for confirmation, then log in above.";
+}
+
+document.getElementById("browseBtn").addEventListener("click", function(){
+  document.getElementById("products").scrollIntoView({ behavior: "smooth" });
+});
+
+/* ===== Place order ===== */
+
+async function placeOrder(paymentReference){
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  if (!user){
+    closePage();
+    account();
+    return;
+  }
+
+  const address = document.getElementById("deliveryAddress").value.trim();
+  const city = document.getElementById("deliveryCity").value.trim();
+  if (!address){
+    alert("Please enter your delivery address.");
+    return;
+  }
+
+  const total = cartSubtotal() + 2500;
+  const fullAddress = city ? `${address}, ${city}` : address;
+  const sellerId = cart[0] ? cart[0].seller_id : null;
+  const handoverCode = String(Math.floor(100000 + Math.random() * 900000));
+
+  const { data: order, error } = await supabaseClient
+    .from("orders")
+    .insert({
+      buyer_id: user.id,
+      seller_id: sellerId,
+      status: "pending",
+      total: total,
+      delivery_address: fullAddress,
+      handover_code: handoverCode,
+      payment_reference: paymentReference || null
+    })
+    .select()
+    .single();
+
+  if (error){
+    alert(error.message);
+    return;
+  }
+
+  if (sellerId){
+    await notifyUser(sellerId, "New order received", `You have a new order (#${order.id}) for ${money(total)}.`);
+  }
+
+  cart = [];
+  document.getElementById("count").textContent = "0";
+
+  openPage("Order Confirmed", `
+    <h2>✓ Order created</h2>
+    <p>Your SOCEX order was created successfully.</p>
+    <p><b>Order #${order.id}</b></p>
+
+    <div class="summary-box" style="margin-top:20px">
+      <div class="check-label">HANDOVER CODE</div>
+      <p style="font-size:32px;font-weight:800;color:#0b1f3a;letter-spacing:4px;margin:6px 0">${handoverCode}</p>
+      <p class="muted">Give this code to the seller only when you physically receive your item. It confirms you're the rightful buyer before payment is released.</p>
+      <p class="muted" style="font-size:12px">Note: automatic WhatsApp delivery of this code isn't connected yet — for now, share it directly with your seller at handover.</p>
+    </div>
+
+    <button class="primary full-btn" id="doneButton" style="margin-top:16px">Continue shopping</button>
+  `);
+
+  document.getElementById("doneButton").addEventListener("click", closePage);
+}
+
+loadProducts();
+loadWishlist();
+
+</script>
+
+</body>
+</html>
